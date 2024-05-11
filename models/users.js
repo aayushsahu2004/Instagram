@@ -8,25 +8,30 @@ const userSchema = mongoose.Schema({
     unique: true
   },
   email: {
-    type: String
+    type: String,
+    unique: true,
+    required: [true, "Email is required"],
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
   },
   name: {
     type: String,
-    require: true
+    require: [true, "Name is required"]
   },
   bio: {
     type: String
   },
   password: {
     type: String,
-    require: true
+    maxLength: [15, "Password should not exceed more than 15 characters"],
+    minLength: [8, "Password should have at least 8 characters"],
+    match:[/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,1024}$/, 'Password should contain one uppercase and splecial character']
   },
   ProfilePicture: {
     type: Object,
     default: {
       fileId: "",
       url: "https://ik.imagekit.io/xfssqj13p/Default-User-Image.png?updatedAt=1715264591029"
-    }
+  }
   },
   posts: [
     {

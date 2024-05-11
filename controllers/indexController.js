@@ -1,7 +1,7 @@
 const path = require("path");
 const userModel = require('../models/users');
 const postModel = require('../models/posts');
-const stroyModel = require('../models/story');
+const storyModel = require('../models/story');
 const commentModel = require('../models/comments');
 const passport = require('passport');
 const localStrategy = require('passport-local');
@@ -12,7 +12,7 @@ const { v4: uuidv4 } = require('uuid');
 
 
 exports.registerPage = tryCatch(function (req, res) {
-    res.render('index', { footer: false });
+    res.render('index', { footer: false, messages: req.flash("error") });
 });
 
 exports.registerUser = tryCatch(function (req, res, next) {
@@ -20,25 +20,35 @@ exports.registerUser = tryCatch(function (req, res, next) {
         username: req.body.username,
         email: req.body.email,
         name: req.body.name
-    })
+    });
     userModel.register(userData, req.body.password)
         .then(function () {
             passport.authenticate("local")(req, res, function () {
-                res.redirect('/profile')
+                res.redirect("/profile")
             })
         })
         .catch(function (err) {
-            console.log(err);
-        })
+            if (err.name === 'UserExistsError' || err.code === 11000) {
+                req.flash('error', 'Username already exists');
+                return res.redirect('/');
+            } else if (err.name === 'MongoServerError' && err.message.includes("E11000 duplicate key")) {
+                req.flash('error', "User with this email address already exist");
+                return res.redirect('/');
+            } else {
+                req.flash('error', err.message);
+                return res.redirect('/');
+            }
+        });
 })
 
 exports.loginPage = tryCatch(function (req, res) {
-    res.render('login', { footer: false });
+    res.render('login', { footer: false, error: req.flash("error") });
 });
 
 exports.loginUser = tryCatch(passport.authenticate("local", {
     successRedirect: '/profile',
-    failureRedirect: '/login'
+    failureRedirect: '/login',
+    failureFlash: true,
 }), function (req, res, next) { });
 
 exports.logOutUser = tryCatch(function (req, res, next) {
@@ -108,7 +118,7 @@ exports.uploadPostPage = tryCatch(async function (req, res) {
 exports.feedPage = tryCatch(async function (req, res) {
     const user = await userModel.findOne({ username: req.session.passport.user });
     const posts = await postModel.find().populate('user');
-    const stories = await stroyModel.find({ user: { $ne: user._id } }).populate('user');
+    const stories = await storyModel.find({ user: { $ne: user._id } }).populate('user');
     var obj = {};
 
     const StoryPacks = stories.filter(function (story) {
@@ -278,7 +288,7 @@ exports.uploadPostAndStory = tryCatch(async function (req, res, next) {
     }
 
     else if (req.body.type === "Story") {
-        const story = await stroyModel.create({
+        const story = await storyModel.create({
             fileId: fileId,
             storyImage: url,
             user: user._id
