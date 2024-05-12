@@ -58,11 +58,11 @@
         }
 
         function showNextStory() {
-            window.location.href = `http://localhost:3000/story/<%= storyUser._id %>/<%= Number(number)+1 %>`;
+            window.location.href = `${window.location.origin}/story/<%= storyUser._id %>/<%= Number(number)+1 %>`;
         }
 
         function showPrevStory() {
-            window.location.href = `http://localhost:3000/story/<%= storyUser._id %>/<%= Number(number)-1 %>`;
+            window.location.href = `${window.location.origin}/story/<%= storyUser._id %>/<%= Number(number)-1 %>`;
         }
 
         function stopInterval() {
