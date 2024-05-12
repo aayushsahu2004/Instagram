@@ -1,10 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const userModel = require('../models/users');
-const postModel = require('../models/posts');
-const commentModel = require('../models/comments');
-const upload = require("../utils/multer");
-const fs = require("fs");
 const { registerPage, loginPage, profilePage, feedPage, storyPage, nextStoryPage, userPosts, savedPosts, searchUser, editPage, registerUser, loginUser, logOutUser, uploadPostPage, uploadProfilePicture, updateUserDetails, showSuggestions, showUserProfile, showSearchUser, followUser, showFollowers, showFollowings, removeFollowers, uploadPostAndStory, likePost, doubleClickLike, savePost, createComments, showComments, deletePost } = require('../controllers/indexController');
 const isloggedIn = require("../utils/auth");
 
@@ -30,7 +25,7 @@ router.get('/profile', isloggedIn, profilePage);
 router.get('/edit', isloggedIn, editPage);
 
 // /POST Upload Profile Picture 
-router.post('/uploadProfilePicture', isloggedIn, upload.single('image'), uploadProfilePicture);
+router.post('/uploadProfilePicture', isloggedIn, uploadProfilePicture);
 
 // /GET Update User Details
 router.post('/update', isloggedIn, updateUserDetails);
@@ -78,7 +73,7 @@ router.get('/Followings/:userId', isloggedIn, showFollowings);
 router.get('/RemoveFollowers/:userId', isloggedIn, removeFollowers);
 
 // /POST Upload Post and Story
-router.post('/uploadPost', isloggedIn, upload.single('image'), uploadPostAndStory);
+router.post('/uploadPost', isloggedIn, uploadPostAndStory);
 
 // /GET Like Post
 router.get('/like/:postId', isloggedIn, likePost);

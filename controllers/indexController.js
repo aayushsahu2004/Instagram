@@ -73,8 +73,9 @@ exports.editPage = tryCatch(async function (req, res) {
 exports.uploadProfilePicture = tryCatch(async function (req, res, next) {
     const user = await userModel.findOne({ username: req.session.passport.user });
 
-    const file = req.file;
-    const modifiedName = uuidv4() + Date.now() + path.extname(file.originalname);
+    const file = req.files.image;
+
+    const modifiedName = uuidv4() + Date.now() + path.extname(file.name);
 
 
     if (user.ProfilePicture.fileId !== "") {
@@ -82,7 +83,7 @@ exports.uploadProfilePicture = tryCatch(async function (req, res, next) {
     };
 
     const { fileId, url } = await imagekit.upload({
-        file: file.buffer,
+        file: file.data,
         fileName: modifiedName
     });
 
@@ -270,10 +271,10 @@ exports.removeFollowers = tryCatch(async function (req, res) {
 
 exports.uploadPostAndStory = tryCatch(async function (req, res, next) {
     const user = await userModel.findOne({ username: req.session.passport.user });
-    const file = req.file;
-    const modifiedName = uuidv4() + Date.now() + path.extname(file.originalname);
+    const file = req.files.image;
+    const modifiedName = uuidv4() + Date.now() + path.extname(file.name);
     const { fileId, url } = await imagekit.upload({
-        file: file.buffer,
+        file: file.data,
         fileName: modifiedName
     });
 

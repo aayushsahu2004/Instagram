@@ -7,6 +7,7 @@ var logger = require('morgan');
 const expressSession = require('express-session')
 const errorHandler = require("./middleware/errorHandler");
 const flash = require("connect-flash");
+const fileUpload = require("express-fileupload");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./models/users');
@@ -14,6 +15,7 @@ const passport = require('passport');
 
 var app = express();
 app.use(errorHandler);
+app.use(fileUpload());
 
 //DB Connection
 require("./models/database").connectDatabase();
